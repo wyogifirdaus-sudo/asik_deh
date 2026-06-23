@@ -9,7 +9,7 @@ import tensorflow as tf
 # 1. CONFIGURATION & CUSTOM DARK THEME (CSS)
 # ==========================================
 st.set_page_config(
-    page_title="Prediksi Upah Pekerja",
+    page_title="Mengukur Upah Buruh",
     page_icon="🧑‍💻",
     layout="centered"
 )
@@ -96,7 +96,7 @@ pipeline = load_pipeline()
 # 3. TAMPILAN DASHBOARD STREAMLIT
 # ==========================================
 # Header dengan Ikon Orang Bekerja & Kombinasi Warna
-st.markdown('<div class="main-title">🧑‍💻 Data Science Salary Predictor 💼</div>', unsafe_allow_html=True)
+st.markdown('<div class="main-title">🧑‍💻 Prediksi Upah Buruh 💼</div>', unsafe_allow_html=True)
 st.markdown('<div class="sub-title">Sistem Kecerdasan Buatan (ANN) Pengukur Kelayakan Gaji Kerja</div>', unsafe_allow_html=True)
 
 st.write("---")
