@@ -7,10 +7,19 @@ import pickle
 # ==================================
 # Memasukkan Model dan Pipeline
 # ==================================
+import os
+import streamlit as st
+import tensorflow as tf
+
 @st.cache_resource
 def load_my_model():
-    return tf.keras.models.load_model('model_ann_terbaik.keras')
-
+    # Menemukan folder tempat file app.py ini berada
+    folder_aktif = os.path.dirname(__file__)
+    
+    # Menggabungkan nama folder dengan nama file model
+    path_model = os.path.join(folder_aktif, 'model_ann_terbaik.keras')
+    
+    return tf.keras.models.load_model(path_model)
 @st.cache_resource
 def load_pipeline():
     with open('pipeline.pkl', 'rb') as f:
@@ -75,3 +84,4 @@ if st.button("Prediksi Kategori Gaji"):
     except Exception as e:
         st.error(f"Terjadi kesalahan: {e}")
         st.info("Catatan: Pastikan teks 'Job Title' atau kode negara yang diinput merupakan data yang valid/pernah ada di dataset asli saat training.")
+
