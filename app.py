@@ -1,87 +1,195 @@
-import streamlit as st
-import pandas as pd
-import numpy as np
-import tensorflow as tf
+import os
 import pickle
+import numpy as np
+import pandas as pd
+import streamlit as st
+import tensorflow as tf
+
+# ==========================================
+# 1. CONFIGURATION & CUSTOM DARK THEME (CSS)
+# ==========================================
+st.set_page_config(
+    page_title="Data Science Salary Predictor",
+    page_icon="🧑‍💻",
+    layout="centered"
+)
+
+# Kustomisasi CSS untuk menyisipkan warna Hitam, Biru, Kuning, dan Hijau
+st.markdown("""
+    <style>
+    /* Mengubah background utama menjadi Hitam/Gelap */
+    .stApp {
+        background-color: #0E1117;
+        color: #FFFFFF;
+    }
+    
+    /* Style Judul Utama (Kombinasi Biru & Kuning) */
+    .main-title {
+        font-size: 36px;
+        font-weight: 800;
+        color: #FFD700; /* Kuning */
+        text-align: center;
+        margin-bottom: 5px;
+    }
+    .sub-title {
+        font-size: 16px;
+        color: #38BDF8; /* Biru Muda */
+        text-align: center;
+        margin-bottom: 30px;
+    }
+    
+    /* Mengubah warna teks label input menjadi Biru Terang agar kontras di latar hitam */
+    label {
+        color: #38BDF8 !important;
+        font-weight: bold !important;
+    }
+    
+    /* Desain tombol kustom (Latar Biru, Teks Hitam/Putih) */
+    div.stButton > button:first-child {
+        background-color: #1E40AF; /* Biru Tua */
+        color: white;
+        border-radius: 8px;
+        border: 1px solid #38BDF8;
+        font-weight: bold;
+        transition: all 0.3s ease;
+    }
+    div.stButton > button:first-child:hover {
+        background-color: #FFD700; /* Kuning saat di-hover */
+        color: #0E1117;
+        border-color: #FFD700;
+    }
+    </style>
+""", unsafe_allow_html=True)
 
 # ==================================
-# Memasukkan Model dan Pipeline
+# 2. MEMASUKKAN MODEL DAN PIPELINE
 # ==================================
-import os
-import streamlit as st
-import tensorflow as tf
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+path_model = os.path.join(BASE_DIR, "model_ann_terbaik.keras")
+path_pipeline = os.path.join(BASE_DIR, "pipeline.pkl")
 
 @st.cache_resource
 def load_my_model():
-    # Menemukan folder tempat file app.py ini berada
-    folder_aktif = os.path.dirname(__file__)
-    
-    # Menggabungkan nama folder dengan nama file model
-    path_model = os.path.join(folder_aktif, 'model_ann_terbaik.keras')
-    
     return tf.keras.models.load_model(path_model)
+
 @st.cache_resource
 def load_pipeline():
-    with open('pipeline.pkl', 'rb') as f:
+    with open(path_pipeline, 'rb') as f:
         return pickle.load(f)
 
 model = load_my_model()
 pipeline = load_pipeline()
 
 # ==========================================
-# 2. TAMPILAN DASHBOARD STREAMLIT
+# 3. TAMPILAN DASHBOARD STREAMLIT
 # ==========================================
-st.title("Aplikasi Prediksi Kelayakan Gaji Pekerja Data Science")
-st.write("Masukkan spesifikasi pekerjaan di bawah ini untuk memprediksi tingkat kategori gaji.")
+# Header dengan Ikon Orang Bekerja & Kombinasi Warna
+st.markdown('<div class="main-title">🧑‍💻 Data Science Salary Predictor 💼</div>', unsafe_allow_html=True)
+st.markdown('<div class="sub-title">Sistem Kecerdasan Buatan (ANN) Pengukur Kelayakan Gaji Kerja</div>', unsafe_allow_html=True)
 
-st.subheader("Karakteristik Pekerjaan & Perusahaan")
+st.write("---")
 
-# Input pilihan sesuai mapping ordinal pada EDA kamu
-experience_level = st.selectbox("Experience Level", options=["EN", "MI", "SE", "EX"])
-employment_type = st.selectbox("Employment Type", options=["FT", "CT", "PT", "FL"])
-remote_ratio = st.selectbox("Remote Ratio", options=[0, 50, 100])
-company_size = st.selectbox("Company Size", options=["S", "M", "L"])
-
-# Input text untuk kolom kategorikal yang di-OneHotEncoder oleh pipeline
-job_title = st.text_input("Job Title", value="Data Scientist")
-employee_residence = st.text_input("Employee Residence (Kode Negara, misal: US, ID)", value="US")
-company_location = st.text_input("Company Location (Kode Negara, misal: US, ID)", value="US")
-
-# ==========================================
-# 3. PROSES PREDIKSI
-# ==========================================
-if st.button("Prediksi Kategori Gaji"):
-    # Mapping manual sesuai nilai encode yang kamu buat di EDA
-    exp_map = {'EN': 1, 'MI': 2, 'SE': 3, 'EX': 4}
-    emp_map = {'FT': 1, 'CT': 2, 'PT': 3, 'FL': 4}
-    size_map = {'S': 1, 'M': 2, 'L': 3}
+with st.container():
+    st.subheader("🏢 Karakteristik Pekerjaan & Perusahaan")
     
-    # Buat ke format dataframe satu baris agar bisa ditransform oleh pipeline
-    input_data = pd.DataFrame([{
-        'experience_level': exp_map[experience_level],
-        'employment_type': emp_map[employment_type],
-        'remote_ratio': remote_ratio,
-        'company_size': size_map[company_size],
-        'job_title': job_title,
-        'employee_residence': employee_residence,
-        'company_location': company_location
-    }])
+    # Baris Pertama
+    col1, col2 = st.columns(2)
+    with col1:
+        experience_level = st.selectbox(
+            "📈 Experience Level", 
+            options=["EN", "MI", "SE", "EX"],
+            help="EN: Entry-level, MI: Mid-level, SE: Senior, EX: Executive"
+        )
+    with col2:
+        employment_type = st.selectbox(
+            "💼 Employment Type", 
+            options=["FT", "CT", "PT", "FL"],
+            help="FT: Full-Time, CT: Contract, PT: Part-Time, FL: Freelance"
+        )
+        
+    # Baris Kedua
+    col3, col4 = st.columns(2)
+    with col3:
+        remote_ratio = st.radio(
+            "🏠 Remote Ratio (%)", 
+            options=[0, 50, 100], 
+            horizontal=True
+        )
+    with col4:
+        company_size = st.radio(
+            "🏢 Company Size", 
+            options=["S", "M", "L"], 
+            horizontal=True
+        )
+
+    st.write("---")
+    st.subheader("📍 Detail Posisi & Lokasi")
     
-    try:
-        # Preprocessing input dengan pipeline transformer dari notebook
-        input_processed = pipeline.transform(input_data)
+    job_title = st.text_input("💻 Job Title (Posisi Kerja)", value="Data Scientist")
+    
+    col5, col6 = st.columns(2)
+    with col5:
+        employee_residence = st.text_input("🌍 Employee Residence (Kode Negara)", value="US")
+    with col6:
+        company_location = st.text_input("🏢 Company Location (Kode Negara)", value="US")
+
+# ==========================================
+# 4. PROSES PREDIKSI & OUTPUT JALUR HIJAU / KUNING
+# ==========================================
+st.write("")
+predict_btn = st.button("🔮 Hitung Kelayakan Gaji", use_container_width=True)
+
+if predict_btn:
+    with st.spinner('Model ANN sedang menganalisis data...'):
         
-        # Prediksi menggunakan model ANN Sequential
-        prediction_prob = model.predict(input_processed)[0][0]
-        prediction_class = 1 if prediction_prob >= 0.5 else 0
+        exp_map = {'EN': 1, 'MI': 2, 'SE': 3, 'EX': 4}
+        emp_map = {'FT': 1, 'CT': 2, 'PT': 3, 'FL': 4}
+        size_map = {'S': 1, 'M': 2, 'L': 3}
         
-        st.subheader("Hasil Analisis Model ANN:")
-        if prediction_class == 1:
-            st.success(f"Gaji diprediksi **DI ATAS** Rata-rata (Probabilitas: {prediction_prob*100:.2f}%)")
-        else:
-            st.error(f"Gaji diprediksi **DI BAWAH** Rata-rata (Probabilitas: {(1 - prediction_prob)*100:.2f}%)")
+        input_data = pd.DataFrame([{
+            'experience_level': exp_map[experience_level],
+            'employment_type': emp_map[employment_type],
+            'remote_ratio': remote_ratio,
+            'company_size': size_map[company_size],
+            'job_title': job_title,
+            'employee_residence': employee_residence,
+            'company_location': company_location
+        }])
+        
+        try:
+            input_processed = pipeline.transform(input_data)
+            prediction_prob = model.predict(input_processed)[0][0]
+            prediction_class = 1 if prediction_prob >= 0.5 else 0
             
-    except Exception as e:
-        st.error(f"Terjadi kesalahan: {e}")
-        st.info("Catatan: Pastikan teks 'Job Title' atau kode negara yang diinput merupakan data yang valid/pernah ada di dataset asli saat training.")
-
+            st.write("---")
+            st.markdown("### 📊 Hasil Analisis Model:")
+            
+            # OUTPUT JALUR HIJAU (Gaji di Atas Rata-rata)
+            if prediction_class == 1:
+                st.balloons()
+                st.success("### 🎉 DI ATAS RATA-RATA!")
+                
+                # Menggunakan warna hijau default sukses Streamlit + Metrik Kuning
+                st.metric(
+                    label="Tingkat Keyakinan Model (Probabilitas Gaji Tinggi)", 
+                    value=f"{prediction_prob*100:.2f}%"
+                )
+                st.info("💡 Posisi ini memiliki nilai pasar yang sangat menguntungkan!")
+                
+            # OUTPUT JALUR KUNING/ORANYE (Gaji di Bawah Rata-rata)
+            else:
+                # Menggunakan warning (warna kuning khas Streamlit)
+                st.warning("### ⚠️ DI BAWAH RATA-RATA")
+                st.metric(
+                    label="Tingkat Keyakinan Model (Probabilitas Gaji Rendah)", 
+                    value=f"{(1 - prediction_prob)*100:.2f}%"
+                )
+                st.markdown("""
+                    <div style="background-color: #3b2001; padding: 10px; border-left: 5px solid #FFD700; border-radius: 4px;">
+                        <span style="color: #FFD700;">💡 <b>Tips Kontribusi:</b></span> Cobalah targetkan ukuran perusahaan yang lebih besar (L) atau tingkatkan level pengalaman untuk mendongkrak algoritma nilai gaji.
+                    </div>
+                """, unsafe_allow_html=True)
+                
+        except Exception as e:
+            st.error(f"❌ Terjadi kesalahan: {e}")
+            st.info("ℹ️ Pastikan teks 'Job Title' atau Kode Negara sudah sesuai dengan dataset training asli.")
