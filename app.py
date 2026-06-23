@@ -9,7 +9,7 @@ import tensorflow as tf
 # 1. CONFIGURATION & CUSTOM DARK THEME (CSS)
 # ==========================================
 st.set_page_config(
-    page_title="Prediksi Upah Pekerja",
+    page_title="Prediksi Upah Buruh",
     page_icon="🧑‍💻",
     layout="centered"
 )
@@ -84,7 +84,7 @@ pipeline = load_pipeline()
 # 3. TAMPILAN DASHBOARD STREAMLIT
 # ==========================================
 # Header dengan Ikon Orang Bekerja & Kombinasi Warna
-st.markdown('<div class="main-title">🧑‍💻 Data Science Salary Predictor 💼</div>', unsafe_allow_html=True)
+st.markdown('<div class="main-title">🧑‍💻 Prediksi Upah Buruh 💼</div>', unsafe_allow_html=True)
 st.markdown('<div class="sub-title">Sistem Kecerdasan Buatan (ANN) Pengukur Kelayakan Gaji Kerja</div>', unsafe_allow_html=True)
 
 st.write("---")
@@ -125,7 +125,7 @@ with st.container():
     st.write("---")
     st.subheader("📍 Detail Posisi & Lokasi")
     
-    # MENGUBAH INPUT MENJADI SELECTBOX (MAPPING SEPERTI EXPERIENCE LEVEL)
+    # 1. DAFTAR POSISI KERJA (JOB TITLE)
     job_titles_list = [
         'Data Scientist', 'Machine Learning Scientist', 'Big Data Engineer',
         'Product Data Analyst', 'Machine Learning Engineer', 'Data Analyst',
@@ -150,11 +150,41 @@ with st.container():
     
     job_title = st.selectbox("💻 Job Title (Posisi Kerja)", options=job_titles_list)
     
+    # 2. DAFTAR NEGARA ASAL KARYAWAN (TERBARU)
+    employee_residence_list = sorted([
+        'DE', 'JP', 'GB', 'HN', 'US', 'HU', 'NZ', 'FR', 'IN', 'PK', 'PL', 'PT', 
+        'CN', 'GR', 'AE', 'NL', 'MX', 'CA', 'AT', 'NG', 'PH', 'ES', 'DK', 'RU', 
+        'IT', 'HR', 'BG', 'SG', 'BR', 'IQ', 'VN', 'BE', 'UA', 'MT', 'CL', 'RO', 
+        'IR', 'CO', 'MD', 'KE', 'SI', 'HK', 'TR', 'RS', 'PR', 'LU', 'JE', 'CZ', 
+        'AR', 'DZ', 'TN', 'MY', 'EE', 'AU', 'BO', 'IE', 'CH'
+    ])
+    
+    # 3. DAFTAR LOKASI PERUSAHAAN (MENGGUNAKAN LIST SEBELUMNYA SEBAGAI REFERENSI)
+    company_location_list = sorted([
+        'DE', 'JP', 'GB', 'HN', 'US', 'HU', 'NZ', 'FR', 'IN', 'PK', 'CN', 'GR', 
+        'AE', 'NL', 'MX', 'CA', 'AT', 'NG', 'ES', 'PT', 'DK', 'IT', 'HR', 'LU', 
+        'PL', 'SG', 'RO', 'IQ', 'BR', 'BE', 'UA', 'IL', 'RU', 'MT', 'CL', 'IR', 
+        'CO', 'MD', 'KE', 'SI', 'CH', 'VN', 'AS', 'TR', 'CZ', 'DZ', 'EE', 'MY', 
+        'AU', 'IE'
+    ])
+    
     col5, col6 = st.columns(2)
     with col5:
-        employee_residence = st.text_input("🌍 Employee Residence (Kode Negara)", value="US")
+        # Set 'US' sebagai default pilihan jika tersedia di list baru
+        default_res_idx = employee_residence_list.index("US") if "US" in employee_residence_list else 0
+        employee_residence = st.selectbox(
+            "🌍 Employee Residence (Negara Tinggal)", 
+            options=employee_residence_list, 
+            index=default_res_idx
+        )
     with col6:
-        company_location = st.text_input("🏢 Company Location (Kode Negara)", value="US")
+        # Set 'US' sebagai default lokasi perusahaan
+        default_loc_idx = company_location_list.index("US") if "US" in company_location_list else 0
+        company_location = st.selectbox(
+            "🏢 Company Location (Lokasi Perusahaan)", 
+            options=company_location_list, 
+            index=default_loc_idx
+        )
 
 # ==========================================
 # 4. PROSES PREDIKSI & OUTPUT JALUR HIJAU / KUNING
@@ -213,4 +243,4 @@ if predict_btn:
                 
         except Exception as e:
             st.error(f"❌ Terjadi kesalahan: {e}")
-            st.info("ℹ️ Pastikan teks 'Job Title' atau Kode Negara sudah sesuai dengan dataset training asli.")
+            st.info("ℹ️ Pastikan seluruh input data sudah sesuai dengan format pipeline training.")
