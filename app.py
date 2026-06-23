@@ -9,7 +9,7 @@ import tensorflow as tf
 # 1. CONFIGURATION & CUSTOM DARK THEME (CSS)
 # ==========================================
 st.set_page_config(
-    page_title="Prediksi Upah Buruh",
+    page_title="Prediksi Upah Pekerja",
     page_icon="🧑‍💻",
     layout="centered"
 )
@@ -42,6 +42,18 @@ st.markdown("""
     label {
         color: #38BDF8 !important;
         font-weight: bold !important;
+    }
+
+    /* BARU: Mengubah warna tulisan indikator di dalam st.radio menjadi Kuning */
+    div[data-testid="stRadio"] label p {
+        color: #FFD700 !important;
+        font-weight: 500;
+    }
+    
+    /* BARU: Mengubah angka hasil tingkat keyakinan (st.metric) menjadi Putih murni agar terbaca */
+    div[data-testid="stMetricValue"] {
+        color: #FFFFFF !important;
+        font-weight: bold;
     }
     
     /* Desain tombol kustom (Latar Biru, Teks Hitam/Putih) */
@@ -84,7 +96,7 @@ pipeline = load_pipeline()
 # 3. TAMPILAN DASHBOARD STREAMLIT
 # ==========================================
 # Header dengan Ikon Orang Bekerja & Kombinasi Warna
-st.markdown('<div class="main-title">🧑‍💻 Prediksi Upah Buruh 💼</div>', unsafe_allow_html=True)
+st.markdown('<div class="main-title">🧑‍💻 Data Science Salary Predictor 💼</div>', unsafe_allow_html=True)
 st.markdown('<div class="sub-title">Sistem Kecerdasan Buatan (ANN) Pengukur Kelayakan Gaji Kerja</div>', unsafe_allow_html=True)
 
 st.write("---")
@@ -150,7 +162,7 @@ with st.container():
     
     job_title = st.selectbox("💻 Job Title (Posisi Kerja)", options=job_titles_list)
     
-    # 2. DAFTAR NEGARA ASAL KARYAWAN (TERBARU)
+    # 2. DAFTAR NEGARA ASAL KARYAWAN
     employee_residence_list = sorted([
         'DE', 'JP', 'GB', 'HN', 'US', 'HU', 'NZ', 'FR', 'IN', 'PK', 'PL', 'PT', 
         'CN', 'GR', 'AE', 'NL', 'MX', 'CA', 'AT', 'NG', 'PH', 'ES', 'DK', 'RU', 
@@ -159,7 +171,7 @@ with st.container():
         'AR', 'DZ', 'TN', 'MY', 'EE', 'AU', 'BO', 'IE', 'CH'
     ])
     
-    # 3. DAFTAR LOKASI PERUSAHAAN (MENGGUNAKAN LIST SEBELUMNYA SEBAGAI REFERENSI)
+    # 3. DAFTAR LOKASI PERUSAHAAN
     company_location_list = sorted([
         'DE', 'JP', 'GB', 'HN', 'US', 'HU', 'NZ', 'FR', 'IN', 'PK', 'CN', 'GR', 
         'AE', 'NL', 'MX', 'CA', 'AT', 'NG', 'ES', 'PT', 'DK', 'IT', 'HR', 'LU', 
@@ -170,7 +182,6 @@ with st.container():
     
     col5, col6 = st.columns(2)
     with col5:
-        # Set 'US' sebagai default pilihan jika tersedia di list baru
         default_res_idx = employee_residence_list.index("US") if "US" in employee_residence_list else 0
         employee_residence = st.selectbox(
             "🌍 Employee Residence (Negara Tinggal)", 
@@ -178,7 +189,6 @@ with st.container():
             index=default_res_idx
         )
     with col6:
-        # Set 'US' sebagai default lokasi perusahaan
         default_loc_idx = company_location_list.index("US") if "US" in company_location_list else 0
         company_location = st.selectbox(
             "🏢 Company Location (Lokasi Perusahaan)", 
