@@ -9,7 +9,7 @@ import tensorflow as tf
 # 1. CONFIGURATION & CUSTOM DARK THEME (CSS)
 # ==========================================
 st.set_page_config(
-    page_title="Data Science Salary Predictor",
+    page_title="Prediksi Upah Pekerja",
     page_icon="🧑‍💻",
     layout="centered"
 )
@@ -125,7 +125,30 @@ with st.container():
     st.write("---")
     st.subheader("📍 Detail Posisi & Lokasi")
     
-    job_title = st.text_input("💻 Job Title (Posisi Kerja)", value="Data Scientist")
+    # MENGUBAH INPUT MENJADI SELECTBOX (MAPPING SEPERTI EXPERIENCE LEVEL)
+    job_titles_list = [
+        'Data Scientist', 'Machine Learning Scientist', 'Big Data Engineer',
+        'Product Data Analyst', 'Machine Learning Engineer', 'Data Analyst',
+        'Lead Data Scientist', 'Business Data Analyst', 'Lead Data Engineer',
+        'Lead Data Analyst', 'Data Engineer', 'Data Science Consultant',
+        'BI Data Analyst', 'Director of Data Science', 'Research Scientist',
+        'Machine Learning Manager', 'Data Engineering Manager',
+        'Machine Learning Infrastructure Engineer', 'ML Engineer', 'AI Scientist',
+        'Computer Vision Engineer', 'Principal Data Scientist',
+        'Data Science Manager', 'Head of Data', '3D Computer Vision Researcher',
+        'Data Analytics Engineer', 'Applied Data Scientist',
+        'Marketing Data Analyst', 'Cloud Data Engineer', 'Financial Data Analyst',
+        'Computer Vision Software Engineer', 'Director of Data Engineering',
+        'Data Science Engineer', 'Principal Data Engineer',
+        'Machine Learning Developer', 'Applied Machine Learning Scientist',
+        'Data Analytics Manager', 'Head of Data Science', 'Data Specialist',
+        'Data Architect', 'Finance Data Analyst', 'Principal Data Analyst',
+        'Big Data Architect', 'Staff Data Scientist', 'Analytics Engineer',
+        'ETL Developer', 'Head of Machine Learning', 'NLP Engineer',
+        'Lead Machine Learning Engineer', 'Data Analytics Lead'
+    ]
+    
+    job_title = st.selectbox("💻 Job Title (Posisi Kerja)", options=job_titles_list)
     
     col5, col6 = st.columns(2)
     with col5:
@@ -169,7 +192,6 @@ if predict_btn:
                 st.balloons()
                 st.success("### 🎉 DI ATAS RATA-RATA!")
                 
-                # Menggunakan warna hijau default sukses Streamlit + Metrik Kuning
                 st.metric(
                     label="Tingkat Keyakinan Model (Probabilitas Gaji Tinggi)", 
                     value=f"{prediction_prob*100:.2f}%"
@@ -178,7 +200,6 @@ if predict_btn:
                 
             # OUTPUT JALUR KUNING/ORANYE (Gaji di Bawah Rata-rata)
             else:
-                # Menggunakan warning (warna kuning khas Streamlit)
                 st.warning("### ⚠️ DI BAWAH RATA-RATA")
                 st.metric(
                     label="Tingkat Keyakinan Model (Probabilitas Gaji Rendah)", 
