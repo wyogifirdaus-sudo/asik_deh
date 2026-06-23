@@ -81,7 +81,13 @@ path_model = os.path.join(BASE_DIR, "model_ann_terbaik.keras")
 path_pipeline = os.path.join(BASE_DIR, "pipeline.pkl")
 
 @st.cache_resource
+# Contoh jika Anda menggunakan fungsi kustom bernama 'f1_score'
+@st.cache_resource
 def load_my_model():
+    # Definisikan objek kustom di sini jika ada
+    # custom_objects = {'f1_score': f1_score} 
+    
+    # return tf.keras.models.load_model(path_model, custom_objects=custom_objects)
     return tf.keras.models.load_model(path_model)
 
 @st.cache_resource
